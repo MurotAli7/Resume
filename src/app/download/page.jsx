@@ -1,16 +1,16 @@
 'use client';
-import { useEffect, useState, Suspense } from 'react'; // Suspense ni import qilamiz
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
 // PdfGenerator komponentini dinamik ravishda yuklaymiz.
-const DynamicPdfGenerator = dynamic(() => import('@/components/PdfGenerator'), {
+// Aliasdan '@/components/PdfGenerator' dan NISBIY YO'LGA O'ZGARISH
+const DynamicPdfGenerator = dynamic(() => import('../../components/PdfGenerator'), { // <-- O'ZGARTIRILGAN QATOR
   ssr: false,
   loading: () => <div className="loading">PDF generatsiyasi yuklanmoqda...</div>,
 });
 
 // useSearchParams ni ishlatadigan komponentni ajratamiz
-// Bu uni faqat mijoz tomonda ishlashini ta'minlaydi
 function SearchParamsHandler({ onDataLoaded }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,9 +22,9 @@ function SearchParamsHandler({ onDataLoaded }) {
     } else {
       onDataLoaded(JSON.parse(stored));
     }
-  }, [router, onDataLoaded]); // onDataLoaded ni ham dependency qatoriga qo'shish
+  }, [router, onDataLoaded]);
 
-  return null; // Bu komponent hech narsa render qilmaydi
+  return null;
 }
 
 export default function DownloadPage() {
@@ -40,11 +40,10 @@ export default function DownloadPage() {
 
   const handlePdfError = (errorMessage) => {
     setPdfStatus('error');
-    
+    // setErrorMessage(errorMessage);
   };
 
   if (!data) {
-    
     return (
       <Suspense fallback={<div className="loading">Ma'lumotlar yuklanmoqda...</div>}>
         <SearchParamsHandler onDataLoaded={setData} />
